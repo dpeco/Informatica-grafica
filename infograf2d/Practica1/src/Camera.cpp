@@ -37,7 +37,7 @@ Camera::Camera(vec3 position, vec3 direction, GLfloat sensitivity, GLfloat fov) 
 void Camera::DoMovement(GLFWwindow * window, GLint dir) {
 	// Camera controls
 	
-	GLfloat cameraSpeed = 1.0f * Deltatime;
+	GLfloat cameraSpeed = 2.0f * Deltatime;
 	if (dir == GLFW_KEY_W) {
 		cameraPos += cameraSpeed * cameraFront;
 	}
@@ -47,6 +47,11 @@ void Camera::DoMovement(GLFWwindow * window, GLint dir) {
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	if (dir == GLFW_KEY_D)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (dir == GLFW_KEY_Q)
+		cameraPos += cameraSpeed * cameraUp;
+	if (dir == GLFW_KEY_E)
+		cameraPos -= cameraSpeed * cameraUp;
+
 }
 void Camera::MouseMove(GLFWwindow* window, double xpos, double ypos) {
 
