@@ -11,6 +11,7 @@
 #include "shader.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Object.h"
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
 #include <assimp\postprocess.h>
@@ -21,9 +22,11 @@ const GLint WIDTH = 800, HEIGHT = 600;
 bool WIREFRAME = false;
 float rotateX = 0.0f;
 float rotateY = 0.0f;
+float offsetX = 0.0f;
+float offsetY = 0.0f;
+float offsetZ = 0.0f;
 bool keys[1024];
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-void MouseMove(GLFWwindow* window, double xpos, double ypos);
 void MouseScroll(GLFWwindow* window, double xScroll, double yScroll);
 void DoMovement(GLFWwindow* window);
 GLfloat mixValue = 0.6f;
@@ -48,8 +51,6 @@ int main() {
 	//initGLFW
 	GLFWwindow* window;
 	glfwSetErrorCallback(error_callback);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-//TODO
 
 	//comprobar que GLFW estaactivo
 	if (!glfwInit())
@@ -91,28 +92,36 @@ int main() {
 	// Setup OpenGL options
 	glEnable(GL_DEPTH_TEST);
 
-	const GLchar* vertexPath = "./src/SimpleVertexShader.vertexshader";
-	const GLchar* fragmentPath = "./src/SimpleFragmentShader.fragmentshader";
-	Shader myShader = Shader::Shader(vertexPath, fragmentPath);
+	const GLchar* vertexPath1 = "./src/SimpleVertexShader1.vertexshader";
+	const GLchar* vertexPath2 = "./src/SimpleVertexShader2.vertexshader";
+	const GLchar* fragmentPath1 = "./src/SimpleFragmentShader1.fragmentshader";
+	const GLchar* fragmentPath2 = "./src/SimpleFragmentShader2.fragmentshader";
+	Shader myShader1 = Shader::Shader(vertexPath1, fragmentPath1);
+	Shader myShader2 = Shader::Shader(vertexPath2, fragmentPath2);
 
-	float offset = 0;
-	bool turnOffset = true;
+	//load random cube
+	FigureType type = cube;
+	vec3 Vposition1 = vec3(-1.f, 0, 0);
+	vec3 Vscale1 = vec3(0.5, 0.5, 0.5);
+	vec3 Vrotate1 = vec3(1, 1, 1);
+	Object ourCube1(Vscale1, Vrotate1, Vposition1, type);
 
-	//models
-	// Load models
-	Model ourModel1("./spider/WusonOBJ.obj");
-	Model ourModel2("./spider/spider.obj");
-	Model ourModel3("./spider/empty_mat.obj");
+	vec3 Vposition2 = vec3(3, 0, 0);
+	vec3 Vscale2 = vec3(2, 2, 2);
+	vec3 Vrotate2 = vec3(1, 1, 1);
+	Object ourCube2(Vscale2, Vrotate2, Vposition2, type);
+
+	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+	vec3 cubeColor = vec3(0.05f, 0.2f, 0.05f);
 	//bucle de dibujado
 	
 	while (!glfwWindowShouldClose(window))
 	{
 		// Render
 		// Clear the colorbuffer
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.f, 0.f, 0.f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		myShader.USE();
+		myShader1.USE();
 
 		DoMovement(window);
 		mat4 view = camera->LookAt();
@@ -122,38 +131,57 @@ int main() {
 		GLfloat fov = camera->GetFOV();
 		projection = glm::perspective(glm::radians(fov), float(screenWidth / screenHeight), 0.1f, 100.0f);
 		
-		//changing the color 
-		GLint variableShader = glGetUniformLocation(myShader.Program, "offset");
-		glUniform1f(variableShader, offset);
-		
 		//uniforms
-		GLint modelLoc = glGetUniformLocation(myShader.Program, "model");
-		GLint viewLoc = glGetUniformLocation(myShader.Program, "view");
-		GLint projectionLoc = glGetUniformLocation(myShader.Program, "projection");
-		
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+		GLint cubeColor1 = glGetUniformLocation(myShader1.Program, "lightColor");
+		glUniform3f(cubeColor1, lightColor.x, lightColor.y, lightColor.z);
 
-		// Draw the loaded model
-		glm::mat4 model;
-		model = glm::translate(model, glm::vec3(0.0f, 0.f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		GLint modelLoc1 = glGetUniformLocation(myShader1.Program, "model");
+		GLint viewLoc1 = glGetUniformLocation(myShader1.Program, "view");
+		GLint projectionLoc1 = glGetUniformLocation(myShader1.Program, "projection");
 		
-		// Load model
-		switch (modelSelect){
-		case 1:
-			ourModel1.Draw(myShader, GL_TRIANGLES);
-		break;
-		case 2:
-			ourModel2.Draw(myShader, GL_TRIANGLES);
-			break;
-		case 3:
-			ourModel3.Draw(myShader, GL_TRIANGLES);
-			break;
-		default:
-			ourModel1.Draw(myShader, GL_TRIANGLES);
-		}
+		glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projectionLoc1, 1, GL_FALSE, glm::value_ptr(projection));
+		
+		// Draw the loaded model
+		mat4 model1;
+		vec3 rotateVec = vec3(rotateX, rotateY, 0);
+		vec3 moveVec = vec3(Vposition1.x + offsetX, Vposition1.y + offsetY, Vposition1.z + offsetZ);
+		ourCube1.Move(moveVec);
+		ourCube1.Rotate(rotateVec);
+		model1 = ourCube1.GetModelMatrix();
+		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
+		ourCube1.Draw();
+
+		myShader2.USE();
+
+		//uniforms
+		//color de la luz + color del cubo
+		
+		GLint lightLoc1 = glGetUniformLocation(myShader2.Program, "lightColor");
+		glUniform3f(lightLoc1, lightColor.x, lightColor.y, lightColor.z);
+		
+		GLint lightPosLoc = glGetUniformLocation(myShader2.Program, "lightPosition");
+		glUniform3f(lightPosLoc, moveVec.x, moveVec.y, moveVec.z);
+
+		GLint cubeLoc2 = glGetUniformLocation(myShader2.Program, "cubeColor");
+		glUniform3f(cubeLoc2, cubeColor.x, cubeColor.y, cubeColor.z);
+		vec3 cameraPosition = camera->GetPos();
+		GLint cameraPosLoc = glGetUniformLocation(myShader2.Program, "cameraPosition");
+		glUniform3f(cameraPosLoc, cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+		GLint modelLoc2 = glGetUniformLocation(myShader2.Program, "model");
+		GLint viewLoc2 = glGetUniformLocation(myShader2.Program, "view");
+		GLint projectionLoc2 = glGetUniformLocation(myShader2.Program, "projection");
+
+		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
+		mat4 model2;
+		model2 = ourCube2.GetModelMatrix();
+		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(model2));
+		glColor3f(0.2, 0.2, 0.2);
+		ourCube2.Draw();
+
+	
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		camera->MouseMove(window, xpos, ypos);
@@ -170,39 +198,9 @@ int main() {
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
-
-	if (key == GLFW_KEY_1) {
-		modelSelect = 1;
-		std::cout << modelSelect;
-	}
-	if (key == GLFW_KEY_2) {
-		modelSelect = 2;
-		std::cout << modelSelect;
-
-	}
-	if (key == GLFW_KEY_3) {
-		modelSelect = 3;
-		std::cout << modelSelect;
-	}
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-		WIREFRAME = !WIREFRAME;
-	}
-	if (key == GLFW_KEY_LEFT) {
-		rotateX += 0.1f;
-	}
-	else if (key == GLFW_KEY_RIGHT) {
-		rotateX -= 0.1f;
-	}
-	//EJERCICIO 2
-	if (key == GLFW_KEY_UP) {
-		rotateY += 0.1f;
-	}
-	if (key == GLFW_KEY_DOWN) {
-		rotateY -= 0.1f;
-	}
 	if (action == GLFW_PRESS)
 		keys[key] = true;
 	else if (action == GLFW_RELEASE)
@@ -223,7 +221,37 @@ void DoMovement(GLFWwindow* window){
 		camera->DoMovement(window, GLFW_KEY_Q);
 	if (keys[GLFW_KEY_E])
 		camera->DoMovement(window, GLFW_KEY_E);
+	if (keys[GLFW_KEY_DOWN]) {
+		offsetY -= 0.05f;
+	}
+	if (keys[GLFW_KEY_LEFT]) {
+		offsetX -= 0.05f;
+	}
+	if (keys[GLFW_KEY_RIGHT]) {
+		offsetX += 0.05f;
+	}
+	if (keys[GLFW_KEY_UP]) {
+		offsetY += 0.05f;
+	}
+	if (keys[GLFW_KEY_O]) {
+		offsetZ -= 0.05f;
+	}
+	if (keys[GLFW_KEY_L]) {
+		offsetZ += 0.05f;
+	}
 
+	if (keys[GLFW_KEY_KP_8]) {
+		rotateX -= 1.f;
+	}
+	else if (keys[GLFW_KEY_KP_2]) {
+		rotateX += 1.f;
+	}
+	else if (keys[GLFW_KEY_KP_6]) {
+		rotateY += 1.f;
+	}
+	else if (keys[GLFW_KEY_KP_4]) {
+		rotateY -= 1.f;
+	}
 }
 
 void MouseScroll(GLFWwindow* window, double xScroll, double yScroll) {
