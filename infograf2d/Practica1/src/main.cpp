@@ -95,9 +95,13 @@ int main() {
 	const GLchar* vertexPath1 = "./src/SimpleVertexShader1.vertexshader";
 	const GLchar* vertexPath2 = "./src/SimpleVertexShader2.vertexshader";
 	const GLchar* fragmentPath1 = "./src/SimpleFragmentShader1.fragmentshader";
-	const GLchar* fragmentPath2 = "./src/SimpleFragmentShader2.fragmentshader";
+	const GLchar* fragmentPath2 = "./src/SimpleFragmentShaderPoint.fragmentshader";
+	const GLchar* fragmentPathPoint = "./src/SimpleFragmentShaderPoint.fragmentshader";
+	const GLchar* fragmentPathDir = "./src/SimpleFragmentShaderDirectional.fragmentshader";
+	const GLchar* fragmentPathSpot = "./src/SimpleFragmentShaderSpot.fragmentshader";
+
 	Shader myShader1 = Shader::Shader(vertexPath1, fragmentPath1);
-	Shader myShader2 = Shader::Shader(vertexPath2, fragmentPath2);
+	Shader myShader2 = Shader::Shader(vertexPath2, fragmentPathSpot);
 
 	//load random cube
 	FigureType type = cube;
@@ -112,7 +116,12 @@ int main() {
 	Object ourCube2(Vscale2, Vrotate2, Vposition2, type);
 
 	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+	vec3 lightDirection = vec3(1.0f, 0.0f, 0.0f);
 	vec3 cubeColor = vec3(0.05f, 0.2f, 0.05f);
+
+	vec3 focoDir = vec3(1.0f, 0.0f, 0.0f);
+	float phiInner = cos(radians(6.0f));
+	float phiOuter = cos(radians(10.0f));
 	//bucle de dibujado
 	
 	while (!glfwWindowShouldClose(window))
@@ -162,6 +171,18 @@ int main() {
 		
 		GLint lightPosLoc = glGetUniformLocation(myShader2.Program, "lightPosition");
 		glUniform3f(lightPosLoc, moveVec.x, moveVec.y, moveVec.z);
+
+		GLint lightDirLoc = glGetUniformLocation(myShader2.Program, "lightDirection");
+		glUniform3f(lightDirLoc, lightDirection.x, lightDirection.y, lightDirection.z);
+
+		GLint focoDirLoc = glGetUniformLocation(myShader2.Program, "focoDir");
+		glUniform3f(focoDirLoc, focoDir.x, focoDir.y, focoDir.z);
+
+		GLint phiInnerLoc = glGetUniformLocation(myShader2.Program, "phiInner");
+		glUniform1f(phiInnerLoc, phiInner);
+
+		GLint phiOuterLoc = glGetUniformLocation(myShader2.Program, "phiOuter");
+		glUniform1f(phiOuterLoc, phiOuter);
 
 		GLint cubeLoc2 = glGetUniformLocation(myShader2.Program, "cubeColor");
 		glUniform3f(cubeLoc2, cubeColor.x, cubeColor.y, cubeColor.z);
