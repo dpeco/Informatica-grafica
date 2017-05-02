@@ -95,7 +95,7 @@ int main() {
 	const GLchar* vertexPath1 = "./src/SimpleVertexShader1.vertexshader";
 	const GLchar* vertexPath2 = "./src/SimpleVertexShader2.vertexshader";
 	const GLchar* fragmentPath1 = "./src/SimpleFragmentShader1.fragmentshader";
-	const GLchar* fragmentPath2 = "./src/SimpleFragmentShaderPoint.fragmentshader";
+	const GLchar* fragmentPath2 = "./src/SimpleFragmentShader2.fragmentshader";
 	const GLchar* fragmentPathPoint = "./src/SimpleFragmentShaderPoint.fragmentshader";
 	const GLchar* fragmentPathDir = "./src/SimpleFragmentShaderDirectional.fragmentshader";
 	const GLchar* fragmentPathSpot = "./src/SimpleFragmentShaderSpot.fragmentshader";
@@ -120,8 +120,8 @@ int main() {
 	vec3 cubeColor = vec3(0.05f, 0.2f, 0.05f);
 
 	vec3 focoDir = vec3(1.0f, 0.0f, 0.0f);
-	float phiInner = cos(radians(6.0f));
-	float phiOuter = cos(radians(10.0f));
+	float phiInner = cos(radians(13.0f));
+	float phiOuter = cos(radians(17.0f));
 	//bucle de dibujado
 	
 	while (!glfwWindowShouldClose(window))
@@ -154,9 +154,9 @@ int main() {
 		// Draw the loaded model
 		mat4 model1;
 		vec3 rotateVec = vec3(rotateX, rotateY, 0);
-		vec3 moveVec = vec3(Vposition1.x + offsetX, Vposition1.y + offsetY, Vposition1.z + offsetZ);
-		ourCube1.Move(moveVec);
-		ourCube1.Rotate(rotateVec);
+		vec3 moveVec = vec3(Vposition2.x + offsetX, Vposition2.y + offsetY, Vposition2.z + offsetZ);
+		ourCube2.Move(moveVec);
+		ourCube2.Rotate(rotateVec);
 		model1 = ourCube1.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
 		ourCube1.Draw();
@@ -165,12 +165,12 @@ int main() {
 
 		//uniforms
 		//color de la luz + color del cubo
-		
+		vec3 cube1position = ourCube1.GetPosition();
 		GLint lightLoc1 = glGetUniformLocation(myShader2.Program, "lightColor");
 		glUniform3f(lightLoc1, lightColor.x, lightColor.y, lightColor.z);
 		
 		GLint lightPosLoc = glGetUniformLocation(myShader2.Program, "lightPosition");
-		glUniform3f(lightPosLoc, moveVec.x, moveVec.y, moveVec.z);
+		glUniform3f(lightPosLoc, cube1position.x, cube1position.y, cube1position.z);
 
 		GLint lightDirLoc = glGetUniformLocation(myShader2.Program, "lightDirection");
 		glUniform3f(lightDirLoc, lightDirection.x, lightDirection.y, lightDirection.z);
@@ -202,7 +202,6 @@ int main() {
 		glColor3f(0.2, 0.2, 0.2);
 		ourCube2.Draw();
 
-	
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		camera->MouseMove(window, xpos, ypos);

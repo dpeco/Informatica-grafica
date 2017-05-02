@@ -15,7 +15,7 @@ void main()
 
 	vec3 normalV = normalize(normalVector);
 	
-	float ambientStrength = 1.0f;
+	float ambientStrength = 0.1f;
 	float diffStrength = 1.0f;
 	float specStrength = 1.0f;
 	

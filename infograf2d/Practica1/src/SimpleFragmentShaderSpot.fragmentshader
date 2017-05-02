@@ -18,17 +18,19 @@ void main()
 {	
 
 	vec3 lDir = normalize (lightPosition - fragPosition);
-	float theta = dot(lDir, normalize(-lightDirection));
-	float epsilon   = phiInner - phiOuter;
+	float theta = dot(lDir, normalize(-focoDir));
+	float epsilon = phiInner - phiOuter;
 	float intensity = clamp((theta - phiOuter) / epsilon, 0.0, 1.0);    
 	
-	if(theta > phiOuter)
-	{
-	vec3 normalV = normalize(normalVector);
+	vec3 C = vec3(1, 0.05, 0.05);
+	float distance = length(lightPosition - fragPosition);
+	float attenuation = 1 / (C.x * 1 + C.y * distance + C.z*pow(distance,2));
 	
-	float ambientStrength = 0.1f;
+	float ambientStrength = 1.0f;
 	float diffStrength = 1.0f;
 	float specStrength = 1.0f;
+	
+	vec3 normalV = normalize(normalVector);
 	
 	vec3 ambient = ambientStrength * cubeColor;
 	
@@ -40,16 +42,8 @@ void main()
 	float esp = max(dot(espR, espV), 0);
 	vec3 specular = specStrength * esp * cubeColor;
 	
-	float distance = length(lightPosition - fragPosition);
-	vec3 C = vec3(1, 1, 1);
-	float attenuation = 1 / (C.x * 1 + C.y * distance + C.z*pow(distance,2));
-	
-	vec3 result = (ambient + diffuse + specular)* attenuation * intensity;
+	vec3 result = (ambient + diffuse + specular)* intensity * attenuation;
 	color = vec4(result, 1.0f);
-	}
-	else {
-	float ambientStrength = 1.0f;
-	color = vec4(ambientStrength * cubeColor, 1.0f);
-	}
+
 	
 }

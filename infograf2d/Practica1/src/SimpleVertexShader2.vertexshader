@@ -3,7 +3,7 @@ layout (location = 0) in vec3 position; // The position variable has attribute p
 layout (location = 1) in vec3 normal;
 
 out vec3 normalVector;
-out vec3 FragPosition;  
+out vec3 fragPosition;  
 
 uniform mat4 model;
 uniform mat4 view;
@@ -15,6 +15,6 @@ uniform vec3 light;
 void main()
 {
 	gl_Position = projection * view * model * vec4(position, 1.0);
-	FragPosition = vec3(model * vec4(position, 1.0f));
+	fragPosition = vec3(model * vec4(position, 1.0f));
 	normalVector = mat3(transpose(inverse(model))) * normal; 
 }
