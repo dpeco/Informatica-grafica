@@ -2,72 +2,70 @@
 
 Object::Object(vec3 scale, vec3 rotation, vec3 position, FigureType typef) {
 
-	GLfloat VertexBufferObject[] = {
+		GLfloat VertexBufferObject[] = {
 		//front
-		1.0f ,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-		1.0f , -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-		-1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-		-1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
-		1.0f ,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f,
+		//front
+		0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+		0.5f ,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
 		//back
-		-1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		1.0f , -1.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		1.0f ,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-
-		1.0f ,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		-1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f,
-		//left
-		-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
-		-1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-		-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-		-1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f,
-		-1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
-		-1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+		0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+		//left	
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 		//right
-		1.0f , -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
-		1.0f ,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
-		1.0f ,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-
-		1.0f ,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-		1.0f , -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-		1.0f , -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
 		//down
-		-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
-		1.0f , -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
-		1.0f , -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-		1.0f , -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-		-1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f,
-		-1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 		//up
-		1.0f ,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		1.0f ,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		-1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f,
-		-1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-		1.0f ,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f
+		0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+		0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+		0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f
 	};
 	
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexBufferObject), VertexBufferObject, GL_STATIC_DRAW);
 
-	
-
 	// Position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 	// Normal attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
-
+	//tex coords
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(2);
 	glBindVertexArray(0);
 
 	Vposition = position;
@@ -75,7 +73,9 @@ Object::Object(vec3 scale, vec3 rotation, vec3 position, FigureType typef) {
 	Vscale = scale;
 }
 
-Object::~Object() {}
+Object::~Object() {
+
+}
 
 void Object::Draw() {
 	glBindVertexArray(VAO);

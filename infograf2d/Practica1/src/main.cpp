@@ -12,6 +12,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Object.h"
+#include "material.h"
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
 #include <assimp\postprocess.h>
@@ -101,7 +102,7 @@ int main() {
 	const GLchar* fragmentPathSpot = "./src/SimpleFragmentShaderSpot.fragmentshader";
 
 	Shader myShader1 = Shader::Shader(vertexPath1, fragmentPath1);
-	Shader myShader2 = Shader::Shader(vertexPath2, fragmentPathSpot);
+	Shader *myShader2 = new Shader(vertexPath2, fragmentPathDir);
 
 	//load random cube
 	FigureType type = cube;
@@ -122,6 +123,11 @@ int main() {
 	vec3 focoDir = vec3(1.0f, 0.0f, 0.0f);
 	float phiInner = cos(radians(13.0f));
 	float phiOuter = cos(radians(17.0f));
+
+	//material
+	Material material ("./src/difuso.png", "./src/especular.png", 32); 
+
+	material.SetMaterial(myShader2);
 	//bucle de dibujado
 	
 	while (!glfwWindowShouldClose(window))
@@ -161,38 +167,44 @@ int main() {
 		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
 		ourCube1.Draw();
 
-		myShader2.USE();
+		myShader2->USE();
 
 		//uniforms
+
+		//materiales
+
+		material.SetShininess(myShader2);
+		material.ActivateTextures();
+
 		//color de la luz + color del cubo
 		vec3 cube1position = ourCube1.GetPosition();
-		GLint lightLoc1 = glGetUniformLocation(myShader2.Program, "lightColor");
+		GLint lightLoc1 = glGetUniformLocation(myShader2->Program, "lightColor");
 		glUniform3f(lightLoc1, lightColor.x, lightColor.y, lightColor.z);
 		
-		GLint lightPosLoc = glGetUniformLocation(myShader2.Program, "lightPosition");
+		GLint lightPosLoc = glGetUniformLocation(myShader2->Program, "lightPosition");
 		glUniform3f(lightPosLoc, cube1position.x, cube1position.y, cube1position.z);
 
-		GLint lightDirLoc = glGetUniformLocation(myShader2.Program, "lightDirection");
+		GLint lightDirLoc = glGetUniformLocation(myShader2->Program, "lightDirection");
 		glUniform3f(lightDirLoc, lightDirection.x, lightDirection.y, lightDirection.z);
 
-		GLint focoDirLoc = glGetUniformLocation(myShader2.Program, "focoDir");
+		GLint focoDirLoc = glGetUniformLocation(myShader2->Program, "focoDir");
 		glUniform3f(focoDirLoc, focoDir.x, focoDir.y, focoDir.z);
 
-		GLint phiInnerLoc = glGetUniformLocation(myShader2.Program, "phiInner");
+		GLint phiInnerLoc = glGetUniformLocation(myShader2->Program, "phiInner");
 		glUniform1f(phiInnerLoc, phiInner);
 
-		GLint phiOuterLoc = glGetUniformLocation(myShader2.Program, "phiOuter");
+		GLint phiOuterLoc = glGetUniformLocation(myShader2->Program, "phiOuter");
 		glUniform1f(phiOuterLoc, phiOuter);
 
-		GLint cubeLoc2 = glGetUniformLocation(myShader2.Program, "cubeColor");
+		GLint cubeLoc2 = glGetUniformLocation(myShader2->Program, "cubeColor");
 		glUniform3f(cubeLoc2, cubeColor.x, cubeColor.y, cubeColor.z);
 		vec3 cameraPosition = camera->GetPos();
-		GLint cameraPosLoc = glGetUniformLocation(myShader2.Program, "cameraPosition");
+		GLint cameraPosLoc = glGetUniformLocation(myShader2->Program, "cameraPosition");
 		glUniform3f(cameraPosLoc, cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
-		GLint modelLoc2 = glGetUniformLocation(myShader2.Program, "model");
-		GLint viewLoc2 = glGetUniformLocation(myShader2.Program, "view");
-		GLint projectionLoc2 = glGetUniformLocation(myShader2.Program, "projection");
+		GLint modelLoc2 = glGetUniformLocation(myShader2->Program, "model");
+		GLint viewLoc2 = glGetUniformLocation(myShader2->Program, "view");
+		GLint projectionLoc2 = glGetUniformLocation(myShader2->Program, "projection");
 
 		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));

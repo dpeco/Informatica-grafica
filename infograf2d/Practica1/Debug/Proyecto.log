@@ -1,20 +1,4 @@
-﻿  shader.cpp
-  material.cpp
-  main.cpp
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(202): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
-  Object.cpp
-  Model.cpp
-  Mesh.cpp
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\mesh.cpp(62): warning C4244: 'argument': conversion from 'GLuint' to 'GLfloat', possible loss of data
-  Camera.cpp
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(60): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(61): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(65): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(66): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(67): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(68): warning C4244: '=': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(89): warning C4244: '-=': conversion from 'double' to 'GLfloat', possible loss of data
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\camera.cpp(97): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
-  Generating Code...
+﻿  main.cpp
+e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(214): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
   Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.exe
   Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)
