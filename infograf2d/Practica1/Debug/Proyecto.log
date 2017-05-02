@@ -1,4 +1,5 @@
 ﻿  main.cpp
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(214): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(153): warning C4305: 'argument': truncation from 'double' to 'float'
+e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(162): warning C4305: 'argument': truncation from 'double' to 'float'
   Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.exe
   Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)

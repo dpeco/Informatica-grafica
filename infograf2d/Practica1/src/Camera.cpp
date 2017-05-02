@@ -37,7 +37,7 @@ Camera::Camera(vec3 position, vec3 direction, GLfloat sensitivity, GLfloat fov) 
 void Camera::DoMovement(GLFWwindow * window, GLint dir) {
 	// Camera controls
 	
-	GLfloat cameraSpeed = 2.0f * Deltatime;
+	GLfloat cameraSpeed = 3.0f * Deltatime;
 	if (dir == GLFW_KEY_W) {
 		cameraPos += cameraSpeed * cameraFront;
 	}
@@ -98,6 +98,22 @@ mat4 Camera::LookAt() {
 	Deltatime = currentFrame - Lastframe;
 	Lastframe = currentFrame;
 	mat4 view = lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	
+	vec3 up = vec3(0, 1, 0);
+	vec3 cameraDirection = vec3(normalize((cameraFront + cameraPos) - cameraPos));
+	vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+
+	vec4 row1 = vec4(cameraRight, 0);
+	vec4 row2 = vec4(cameraUp, 0);
+	vec4 row3 = vec4(cameraDirection, 0);
+	vec4 row4 = vec4(0, 0, 0, 1);
+	vec4 row5 = vec4(1, 0, 0, -cameraPos.x);
+	vec4 row6 = vec4(0, 1, 0, -cameraPos.y);
+	vec4 row7 = vec4(0, 0, 1, -cameraPos.z);
+	vec4 row8 = vec4(0, 0, 0, 1);
+	mat4 manualView1 = mat4(row1, row2, row3, row4);
+	mat4 manualView2 = mat4(row5, row6, row7, row8);
+	manualView1 *= manualView2;
 	return view;
 }
 GLfloat Camera::GetFOV() {

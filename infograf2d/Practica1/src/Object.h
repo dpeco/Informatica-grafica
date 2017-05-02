@@ -7,6 +7,7 @@ using namespace glm;
 
 enum FigureType {
 	cube = 0,
+	invertedcube = 1,
 };
 class Object {
 	
