@@ -53,7 +53,6 @@ int main() {
 	//initGLFW
 	GLFWwindow* window;
 	glfwSetErrorCallback(error_callback);
-
 	//comprobar que GLFW estaactivo
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
@@ -89,6 +88,7 @@ int main() {
 	int screenWidth, screenHeight;
 	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	//fondo
 	//cargamos los shader
 	// Setup OpenGL options

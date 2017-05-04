@@ -103,17 +103,31 @@ mat4 Camera::LookAt() {
 	vec3 cameraDirection = vec3(normalize((cameraFront + cameraPos) - cameraPos));
 	vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
 
+	/*
+	vec3 cameraDirection = vec3(normalize((cameraFront + cameraPos) - cameraPos));
+	vec3 cameraRight = normalize(cross(up, cameraDirection));
+	vec3 cammUp = cross(cameraDirection, cameraRight);
 	vec4 row1 = vec4(cameraRight, 0);
-	vec4 row2 = vec4(cameraUp, 0);
+	vec4 row2 = vec4(cammUp, 0);
 	vec4 row3 = vec4(cameraDirection, 0);
 	vec4 row4 = vec4(0, 0, 0, 1);
 	vec4 row5 = vec4(1, 0, 0, -cameraPos.x);
 	vec4 row6 = vec4(0, 1, 0, -cameraPos.y);
 	vec4 row7 = vec4(0, 0, 1, -cameraPos.z);
 	vec4 row8 = vec4(0, 0, 0, 1);
-	mat4 manualView1 = mat4(row1, row2, row3, row4);
-	mat4 manualView2 = mat4(row5, row6, row7, row8);
-	manualView1 *= manualView2;
+	mat4 manualView1;
+	manualView1[0] = row1;
+	manualView1[1] = row2;
+	manualView1[2] = row3;
+	manualView1[3] = row4;
+
+	mat4 manualView2;
+	manualView2[0] = row5;
+	manualView2[1] = row6;
+	manualView2[2] = row7;
+	manualView2[3] = row8;
+	mat4 lookAt = manualView2 * manualView1;
+	*/
 	return view;
 }
 GLfloat Camera::GetFOV() {
