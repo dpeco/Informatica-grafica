@@ -1,5 +1,5 @@
 ﻿  main.cpp
-c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(153): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(162): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(155): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(164): warning C4305: 'argument': truncation from 'double' to 'float'
   Proyecto.vcxproj -> C:\Users\dpeco\Downloads\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.exe
   Proyecto.vcxproj -> C:\Users\dpeco\Downloads\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)

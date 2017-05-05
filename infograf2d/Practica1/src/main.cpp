@@ -110,11 +110,13 @@ int main() {
 	Shader S2Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader *myShader1 = new Shader(vertexPathMultiple, fragmentPathMultiple);
 	Shader *myShader2 = new Shader(vertexPathMultiple, fragmentPathMultiple);
-
+	Shader *myShader3 = new Shader(vertexPathMultiple, fragmentPathMultiple);
 	//material
-	Material material ("./src/difuso.png", "./src/especular.png", 32); 
-	material.SetMaterial(myShader1);
-	material.SetMaterial(myShader2);
+	Material material2 ("./src/difuso.png", "./src/especular.png", 32); 
+	Material material1("./src/difuso2.png", "./src/especular2.png", 32);
+	Material material3("./src/difuso3.png", "./src/especular3.png", 64);
+	material2.SetMaterial(myShader2);
+	material1.SetMaterial(myShader1);
 	//bucle de dibujado
 	
 	//directional light
@@ -141,7 +143,7 @@ int main() {
 	vec3 P2diffuse = vec3(0, 0, 1);
 	vec3 P2specular = vec3(0, 0, 1);
 	Light p2light(P2position, P2dir, P2ambient, P2diffuse, P2specular, POINT, 1);
-	p2light.SetAtt(1.00f, 0.05f, 0.05f);
+	p2light.SetAtt(1.00f, 0.01f, 0.01f);
 
 	//2 spotlights
 	vec3 S1position = vec3(-2, 0, 0);
@@ -159,7 +161,7 @@ int main() {
 	vec3 S2diffuse = vec3(1, 1, 0);
 	vec3 S2specular = vec3(1, 1, 0);
 	Light s2light(S2position, S2dir, S2ambient, S2diffuse, S2specular, SPOT, 1);
-	s2light.SetAtt(1.00, 0.05, 0.05);
+	s2light.SetAtt(1.00, 0.01, 0.01);
 	s2light.SetAperture(10.0f, 20.0f);
 
 	//we load dem cubes
@@ -177,7 +179,7 @@ int main() {
 	Object s2Cube(lightScale, lightrotate, S2position, type);
 
 	//inverted cube
-	FigureType Itype = invertedcube;
+	FigureType Itype = cube;
 	vec3 Vposition1 = vec3(1, 0, 1);
 	vec3 Vscale1 = vec3(15, 15, 15);
 	vec3 Vrotate1 = vec3(1, 1, 1);
@@ -188,6 +190,12 @@ int main() {
 	vec3 Vscale2 = vec3(2, 2, 2);
 	vec3 Vrotate2 = vec3(1, 1, 1);
 	Object ourCube2(Vscale2, Vrotate2, Vposition2, type);
+
+	//materialcube 2
+	vec3 Vposition3 = vec3(-3, 0, -6);
+	vec3 Vscale3 = vec3(3, 3, 3);
+	vec3 Vrotate3 = vec3(1, 1, 1);
+	Object ourCube3(Vscale3, Vrotate3, Vposition3, type);
 	
 	while (!glfwWindowShouldClose(window))
 	{
@@ -253,39 +261,81 @@ int main() {
 		s2Cube.Draw(); // Draw the loaded model
 
 		//cubo material
-		myShader2->USE();
-
 		vec3 rotateVec = vec3(rotateX, rotateY, 0);
 		vec3 moveVec = vec3(Vposition2.x + offsetX, Vposition2.y + offsetY, Vposition2.z + offsetZ);
 		ourCube2.Move(moveVec);
 		ourCube2.Rotate(rotateVec);
 
-		material.SetShininess(myShader2);
-		material.ActivateTextures();
-
 		//color de la luz + color del cubo
 		vec3 cameraPosition = camera->GetPos();
-		Dlight.SetLight(myShader2 , cameraPosition);
+	
+		myShader1->USE();
+		material1.SetShininess(myShader2);
+		material1.ActivateTextures();
+
+		Dlight.SetLight(myShader1, cameraPosition);
+		p1light.SetLight(myShader1, cameraPosition);
+		p2light.SetLight(myShader1, cameraPosition);
+		s1light.SetLight(myShader1, cameraPosition);
+		s2light.SetLight(myShader1, cameraPosition);
+
+		GLint modelLoc1 = glGetUniformLocation(myShader1->Program, "model");
+		GLint viewLoc1 = glGetUniformLocation(myShader1->Program, "view");
+		GLint projectionLoc1 = glGetUniformLocation(myShader1->Program, "projection");
+
+		glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projectionLoc1, 1, GL_FALSE, glm::value_ptr(projection));
+
+		mat4 model1;
+		model1 = ourCube1.GetModelMatrix();
+		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
+		ourCube1.Draw();
+
+		myShader2->USE();
+
+		Dlight.SetLight(myShader2, cameraPosition);
 		p1light.SetLight(myShader2, cameraPosition);
 		p2light.SetLight(myShader2, cameraPosition);
 		s1light.SetLight(myShader2, cameraPosition);
 		s2light.SetLight(myShader2, cameraPosition);
-		GLint modelLoc2 = glGetUniformLocation(myShader2->Program, "model");
-		GLint viewLoc2 = glGetUniformLocation(myShader2->Program, "view");
-		GLint projectionLoc2 = glGetUniformLocation(myShader2->Program, "projection");
+
+		material2.SetShininess(myShader2);
+		material2.ActivateTextures();
+
+		GLint modelLoc2 = glGetUniformLocation(myShader1->Program, "model");
+		GLint viewLoc2 = glGetUniformLocation(myShader1->Program, "view");
+		GLint projectionLoc2 = glGetUniformLocation(myShader1->Program, "projection");
 
 		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
-
-		mat4 model1;
-		model1 = ourCube1.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(model1));
-		ourCube2.Draw();
 
 		mat4 model2;
 		model2 = ourCube2.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(model2));
 		ourCube2.Draw();
+
+		myShader3->USE();
+
+		Dlight.SetLight(myShader3, cameraPosition);
+		p1light.SetLight(myShader3, cameraPosition);
+		p2light.SetLight(myShader3, cameraPosition);
+		s1light.SetLight(myShader3, cameraPosition);
+		s2light.SetLight(myShader3, cameraPosition);
+
+		material3.SetShininess(myShader2);
+		material3.ActivateTextures();
+
+		GLint modelLoc3 = glGetUniformLocation(myShader3->Program, "model");
+		GLint viewLoc3 = glGetUniformLocation(myShader3->Program, "view");
+		GLint projectionLoc3 = glGetUniformLocation(myShader3->Program, "projection");
+
+		glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
+
+		mat4 model3;
+		model3 = ourCube3.GetModelMatrix();
+		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model3));
+		ourCube3.Draw();
 
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
