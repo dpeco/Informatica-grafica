@@ -17,7 +17,8 @@
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
 #include <assimp\postprocess.h>
-
+#include <map>
+#include <vector>
 using namespace std;
 using namespace glm;
 const GLint WIDTH = 800, HEIGHT = 600;
@@ -89,34 +90,29 @@ int main() {
 	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	//fondo
-	//cargamos los shader
 	// Setup OpenGL options
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	const GLchar* vertexPath1 = "./src/SimpleVertexShader1.vertexshader";
 	const GLchar* vertexPath2 = "./src/SimpleVertexShader2.vertexshader";
 	const GLchar* fragmentPath1 = "./src/SimpleFragmentShader1.fragmentshader";
 	const GLchar* fragmentPath2 = "./src/SimpleFragmentShader2.fragmentshader";
-	const GLchar* fragmentPathPoint = "./src/SimpleFragmentShaderPoint.fragmentshader";
-	const GLchar* fragmentPathDir = "./src/SimpleFragmentShaderDirectional.fragmentshader";
-	const GLchar* fragmentPathSpot = "./src/SimpleFragmentShaderSpot.fragmentshader";
 	const GLchar* vertexPathMultiple = "./src/VertexShaderPhongTexture.vs";
 	const GLchar* fragmentPathMultiple = "./src/FragmentShaderPhongTexture.fs";
+
 	Shader DShader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader P1Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader P2Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader S1Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader S2Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader *myShader1 = new Shader(vertexPathMultiple, fragmentPathMultiple);
-	Shader *myShader2 = new Shader(vertexPathMultiple, fragmentPathMultiple);
-	Shader *myShader3 = new Shader(vertexPathMultiple, fragmentPathMultiple);
+	Shader *myShader2 = new Shader(vertexPath2, fragmentPath2);
 	//material
-	Material material2 ("./src/difuso.png", "./src/especular.png", 32); 
+	Material material2 ("./src/difuso4.png", "./src/especular.png", 32); 
 	Material material1("./src/difuso2.png", "./src/especular2.png", 32);
-	Material material3("./src/difuso3.png", "./src/especular3.png", 64);
-	material2.SetMaterial(myShader2);
-	material1.SetMaterial(myShader1);
+	Material material3("./src/difuso5.png", "./src/especular.png", 64);
 	//bucle de dibujado
 	
 	//directional light
@@ -152,7 +148,7 @@ int main() {
 	vec3 S1diffuse = vec3(0, 1, 1);
 	vec3 S1specular = vec3(0, 1, 1);
 	Light s1light(S1position, S1dir, S1ambient, S1diffuse, S1specular, SPOT, 0);
-	s1light.SetAtt(1.00, 0.05, 0.05);
+	s1light.SetAtt(1.00, 0.0, 0.0);
 	s1light.SetAperture(20.0f, 30.0f);
 
 	vec3 S2position = vec3(4, 0, 0);
@@ -183,20 +179,25 @@ int main() {
 	vec3 Vposition1 = vec3(1, 0, 1);
 	vec3 Vscale1 = vec3(15, 15, 15);
 	vec3 Vrotate1 = vec3(1, 1, 1);
-	Object ourCube1(Vscale1, Vrotate1, Vposition1, Itype);
+	Object ourCube1(Vscale1, Vrotate1, Vposition1, FigureType::cube);
 
-	//materialcube
+	//ventana
 	vec3 Vposition2 = vec3(3, 0, 0);
 	vec3 Vscale2 = vec3(2, 2, 2);
 	vec3 Vrotate2 = vec3(1, 1, 1);
-	Object ourCube2(Vscale2, Vrotate2, Vposition2, type);
-
-	//materialcube 2
+	Object ourCube2(Vscale2, Vrotate2, vec3(3, 0, 0), FigureType::window);
+	//hierba
 	vec3 Vposition3 = vec3(-3, 0, -6);
 	vec3 Vscale3 = vec3(3, 3, 3);
 	vec3 Vrotate3 = vec3(1, 1, 1);
-	Object ourCube3(Vscale3, Vrotate3, Vposition3, type);
-	
+	Object ourCube3(Vscale3, Vrotate3, vec3(-3, 0, -6), FigureType::leaves);
+	ourCube3.Rotate(vec3(0, 180, 0));;
+
+	//all transparent objects are here, the following array has every position
+	std::vector<Object> transparentObjects;
+	transparentObjects.push_back(ourCube2); //since this is the object that the user can move, this one should always be the 1st one
+	transparentObjects.push_back(ourCube3);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// Render
@@ -260,17 +261,11 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(P2Shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(s2model));
 		s2Cube.Draw(); // Draw the loaded model
 
-		//cubo material
-		vec3 rotateVec = vec3(rotateX, rotateY, 0);
-		vec3 moveVec = vec3(Vposition2.x + offsetX, Vposition2.y + offsetY, Vposition2.z + offsetZ);
-		ourCube2.Move(moveVec);
-		ourCube2.Rotate(rotateVec);
-
 		//color de la luz + color del cubo
 		vec3 cameraPosition = camera->GetPos();
 	
 		myShader1->USE();
-		material1.SetShininess(myShader2);
+		material1.SetShininess(myShader1);
 		material1.ActivateTextures();
 
 		Dlight.SetLight(myShader1, cameraPosition);
@@ -290,53 +285,46 @@ int main() {
 		model1 = ourCube1.GetModelMatrix();
 		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
 		ourCube1.Draw();
-
+		//transparent object draw, first sort
+		
 		myShader2->USE();
 
-		Dlight.SetLight(myShader2, cameraPosition);
-		p1light.SetLight(myShader2, cameraPosition);
-		p2light.SetLight(myShader2, cameraPosition);
-		s1light.SetLight(myShader2, cameraPosition);
-		s2light.SetLight(myShader2, cameraPosition);
+		//cubo material
+		vec3 rotateVec = vec3(rotateX, rotateY, 0);
+		vec3 moveVec = vec3(Vposition2.x + offsetX, Vposition2.y + offsetY, Vposition2.z + offsetZ);
+		ourCube2.Move(moveVec);
+		ourCube2.Rotate(rotateVec);
+		transparentObjects[0] = ourCube2;
+		std::map<float, Object> transparentSort;
+		for (GLuint i = 0; i < transparentObjects.size(); i++) // windows contains all window positions
+		{
+			GLfloat distance = length(cameraPosition - transparentObjects[i].GetPosition());
+			transparentSort[distance] = transparentObjects[i];
+		}
+		
+		for (std::map<float, Object>::reverse_iterator it = transparentSort.rbegin(); it != transparentSort.rend(); ++it)
+		{
+			if (it->second.GetType() == FigureType::window) {
+				material2.SetShininess(myShader2);
+				material2.ActivateTextures();
+			}
+			else {
+				material3.SetShininess(myShader2);
+				material3.ActivateTextures();
+			}
 
-		material2.SetShininess(myShader2);
-		material2.ActivateTextures();
+			GLint modelLoc2 = glGetUniformLocation(myShader2->Program, "model");
+			GLint viewLoc2 = glGetUniformLocation(myShader2->Program, "view");
+			GLint projectionLoc2 = glGetUniformLocation(myShader2->Program, "projection");
 
-		GLint modelLoc2 = glGetUniformLocation(myShader1->Program, "model");
-		GLint viewLoc2 = glGetUniformLocation(myShader1->Program, "view");
-		GLint projectionLoc2 = glGetUniformLocation(myShader1->Program, "projection");
+			glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, value_ptr(view));
+			glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, value_ptr(projection));
 
-		glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, glm::value_ptr(projection));
-
-		mat4 model2;
-		model2 = ourCube2.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, glm::value_ptr(model2));
-		ourCube2.Draw();
-
-		myShader3->USE();
-
-		Dlight.SetLight(myShader3, cameraPosition);
-		p1light.SetLight(myShader3, cameraPosition);
-		p2light.SetLight(myShader3, cameraPosition);
-		s1light.SetLight(myShader3, cameraPosition);
-		s2light.SetLight(myShader3, cameraPosition);
-
-		material3.SetShininess(myShader2);
-		material3.ActivateTextures();
-
-		GLint modelLoc3 = glGetUniformLocation(myShader3->Program, "model");
-		GLint viewLoc3 = glGetUniformLocation(myShader3->Program, "view");
-		GLint projectionLoc3 = glGetUniformLocation(myShader3->Program, "projection");
-
-		glUniformMatrix4fv(viewLoc3, 1, GL_FALSE, glm::value_ptr(view));
-		glUniformMatrix4fv(projectionLoc3, 1, GL_FALSE, glm::value_ptr(projection));
-
-		mat4 model3;
-		model3 = ourCube3.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model3));
-		ourCube3.Draw();
-
+			mat4 model2;
+			model2 = it->second.GetModelMatrix();
+			glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, value_ptr(model2));
+			it->second.Draw();
+		}
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
 		camera->MouseMove(window, xpos, ypos);

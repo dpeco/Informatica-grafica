@@ -7,11 +7,13 @@ using namespace glm;
 
 enum FigureType {
 	cube = 0,
-	invertedcube = 1,
+	window = 1,
+	leaves = 2
 };
 class Object {
 	
 public:
+	Object();
 	Object(vec3 scale, vec3 rotation, vec3 position, FigureType typef);
 	~Object();
 
@@ -20,6 +22,7 @@ public:
 	void Rotate(vec3 rota);
 	void Scale(vec3 scal);
 	void Delete();
+	FigureType GetType();
 	mat4 GetModelMatrix();
 	vec3 GetPosition();
 
@@ -28,4 +31,5 @@ private:
 	vec3 Vposition;
 	vec3 Vscale;
 	vec3 Vrotation;
+	FigureType type;
 };
