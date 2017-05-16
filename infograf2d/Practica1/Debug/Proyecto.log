@@ -1,5 +1,4 @@
 ﻿  main.cpp
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(160): warning C4305: 'argument': truncation from 'double' to 'float'
-cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
-  Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.exe
-  Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)
+c:\users\dpeco\downloads\informatica-grafica-master\infograf2d\practica1\src\main.cpp(163): warning C4305: 'argument': truncation from 'double' to 'float'
+  Proyecto.vcxproj -> C:\Users\dpeco\Downloads\Informatica-grafica-master\infograf2d\Practica1\Debug\Practica1.exe
+  Proyecto.vcxproj -> C:\Users\dpeco\Downloads\Informatica-grafica-master\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)

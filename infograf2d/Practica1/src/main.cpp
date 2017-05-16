@@ -19,6 +19,7 @@
 #include <assimp\postprocess.h>
 #include <map>
 #include <vector>
+
 using namespace std;
 using namespace glm;
 const GLint WIDTH = 800, HEIGHT = 600;
@@ -111,8 +112,10 @@ int main() {
 	Shader *myShader2 = new Shader(vertexPath2, fragmentPath2);
 	//material
 	Material material2 ("./src/difuso4.png", "./src/especular.png", 32); 
-	Material material1("./src/difuso2.png", "./src/especular2.png", 32);
+	Material material1("./src/difuso.png", "./src/especular2.png", 32);
 	Material material3("./src/difuso5.png", "./src/especular.png", 64);
+	Material material4("./src/difuso6.png", "./src/especular.png", 64);
+
 	//bucle de dibujado
 	
 	//directional light
@@ -198,6 +201,12 @@ int main() {
 	transparentObjects.push_back(ourCube2); //since this is the object that the user can move, this one should always be the 1st one
 	transparentObjects.push_back(ourCube3);
 
+
+	//models
+	// Load models
+	Model ourModel1("./spider/cobCastle.obj");
+	Model ourModel2("./spider/Fox/Fox.obj");
+	Model ourModel3("./spider/toad/toad.obj");
 	while (!glfwWindowShouldClose(window))
 	{
 		// Render
@@ -287,7 +296,28 @@ int main() {
 		ourCube1.Draw();
 		//transparent object draw, first sort
 		
-		myShader2->USE();
+		myShader1->USE();
+
+		// Draw the loaded model 1
+		glm::mat4 model3;
+		GLint modelLoc3 = glGetUniformLocation(myShader1->Program, "model");
+
+		model3 = glm::translate(model3, glm::vec3(0.0f, 10.f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+		model3 = glm::scale(model3, glm::vec3(0.1f));
+		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model3));
+		ourModel1.Draw(*myShader1, GL_TRIANGLES);
+
+		glm::mat4 model4;
+		model4 = glm::translate(model4, glm::vec3(5.0f, 0.0f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+		model4 = glm::scale(model4, glm::vec3(0.2f));
+		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model4));
+		ourModel2.Draw(*myShader1, GL_TRIANGLES);
+
+		glm::mat4 model5;
+		model5 = glm::translate(model5, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+		model5 = glm::scale(model5, glm::vec3(0.2f));
+		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model5));
+		ourModel3.Draw(*myShader1, GL_TRIANGLES);
 
 		//cubo material
 		vec3 rotateVec = vec3(rotateX, rotateY, 0);
