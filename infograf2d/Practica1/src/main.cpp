@@ -33,6 +33,7 @@ bool keys[1024];
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void MouseScroll(GLFWwindow* window, double xScroll, double yScroll);
 void DoMovement(GLFWwindow* window);
+void WaterLerp(float ogYPos);
 GLfloat mixValue = 0.6f;
 
 //creamos la camara
@@ -45,6 +46,12 @@ vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
 Camera *camera = new Camera (cameraPos, cameraDirection, 0.1f, 60.f);
 
 int modelSelect;
+
+bool stageSelect = false;
+
+bool dontLerp = true;
+float lerpInc = 0.05f;
+float goalYPos;
 static void error_callback(int error, const char* description)
 {
 	fputs(description, stderr);
@@ -114,7 +121,6 @@ int main() {
 	Material material2 ("./src/difuso4.png", "./src/especular.png", 32); 
 	Material material1("./src/difuso.png", "./src/especular2.png", 32);
 	Material material3("./src/difuso5.png", "./src/especular.png", 64);
-	Material material4("./src/difuso6.png", "./src/especular.png", 64);
 
 	//bucle de dibujado
 	
@@ -128,21 +134,21 @@ int main() {
 	Dlight.SetAtt(1.00f, 0.05f, 0.05f);
 	//2 point lights
 	
-	vec3 P1position = vec3(-4, 0, 0);
+	vec3 P1position = vec3(-5, 5, 0);
 	vec3 P1dir = vec3(0, 0, 0);
-	vec3 P1ambient = vec3(0, 1, 0);
-	vec3 P1diffuse = vec3(0, 1, 0);
-	vec3 P1specular = vec3(0, 1, 0);
+	vec3 P1ambient = vec3(1, 1, 1);
+	vec3 P1diffuse = vec3(1, 1, 1);
+	vec3 P1specular = vec3(1, 1, 1);
 	Light p1light(P1position, P1dir, P1ambient, P1diffuse, P1specular, POINT, 0);
 	p1light.SetAtt(1.00f, 0.05f, 0.05f);
 	
-	vec3 P2position = vec3(2, 0, 0);
+	vec3 P2position = vec3(5, 9, 0);
 	vec3 P2dir = vec3(0, 0, 0);
-	vec3 P2ambient = vec3(0, 0, 1);
-	vec3 P2diffuse = vec3(0, 0, 1);
-	vec3 P2specular = vec3(0, 0, 1);
+	vec3 P2ambient = vec3(1, 1, 1);
+	vec3 P2diffuse = vec3(1, 1, 1);
+	vec3 P2specular = vec3(1, 1, 1);
 	Light p2light(P2position, P2dir, P2ambient, P2diffuse, P2specular, POINT, 1);
-	p2light.SetAtt(1.00f, 0.01f, 0.01f);
+	p2light.SetAtt(1.00f, 0.05f, 0.05f);
 
 	//2 spotlights
 	vec3 S1position = vec3(-2, 0, 0);
@@ -184,29 +190,31 @@ int main() {
 	vec3 Vrotate1 = vec3(1, 1, 1);
 	Object ourCube1(Vscale1, Vrotate1, Vposition1, FigureType::cube);
 
-	//ventana
-	vec3 Vposition2 = vec3(3, 0, 0);
-	vec3 Vscale2 = vec3(2, 2, 2);
-	vec3 Vrotate2 = vec3(1, 1, 1);
-	Object ourCube2(Vscale2, Vrotate2, vec3(3, 0, 0), FigureType::window);
+	//ventana / agua now
+	vec3 Vposition2 = vec3(0.0f, -3.2f, 0);
+	goalYPos = Vposition2.y;
+	vec3 Vscale2 = vec3(30.f);
+	vec3 Vrotate2 = vec3(90, 0, 0);
+	Object ourCube2(Vscale2, Vrotate2, Vposition2, FigureType::window);
 	//hierba
 	vec3 Vposition3 = vec3(-3, 0, -6);
 	vec3 Vscale3 = vec3(3, 3, 3);
 	vec3 Vrotate3 = vec3(1, 1, 1);
-	Object ourCube3(Vscale3, Vrotate3, vec3(-3, 0, -6), FigureType::leaves);
-	ourCube3.Rotate(vec3(0, 180, 0));;
+	Object ourCube3(Vscale3, Vrotate3, Vposition3, FigureType::leaves);
 
+	
 	//all transparent objects are here, the following array has every position
 	std::vector<Object> transparentObjects;
 	transparentObjects.push_back(ourCube2); //since this is the object that the user can move, this one should always be the 1st one
 	transparentObjects.push_back(ourCube3);
-
-
+	
 	//models
 	// Load models
-	Model ourModel1("./spider/cobCastle.obj");
+	Model ourModel1("./spider/bob/bobomb battlefeild.obj");
 	Model ourModel2("./spider/Fox/Fox.obj");
 	Model ourModel3("./spider/toad/toad.obj");
+	Model ourModel4("./spider/wdr/wetdryworld.obj");
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// Render
@@ -290,10 +298,6 @@ int main() {
 		glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc1, 1, GL_FALSE, glm::value_ptr(projection));
 
-		mat4 model1;
-		model1 = ourCube1.GetModelMatrix();
-		glUniformMatrix4fv(modelLoc1, 1, GL_FALSE, glm::value_ptr(model1));
-		ourCube1.Draw();
 		//transparent object draw, first sort
 		
 		myShader1->USE();
@@ -302,28 +306,49 @@ int main() {
 		glm::mat4 model3;
 		GLint modelLoc3 = glGetUniformLocation(myShader1->Program, "model");
 
-		model3 = glm::translate(model3, glm::vec3(0.0f, 10.f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model3 = glm::scale(model3, glm::vec3(0.1f));
-		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model3));
-		ourModel1.Draw(*myShader1, GL_TRIANGLES);
-
-		glm::mat4 model4;
-		model4 = glm::translate(model4, glm::vec3(5.0f, 0.0f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model4 = glm::scale(model4, glm::vec3(0.2f));
-		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model4));
-		ourModel2.Draw(*myShader1, GL_TRIANGLES);
-
-		glm::mat4 model5;
-		model5 = glm::translate(model5, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model5 = glm::scale(model5, glm::vec3(0.2f));
-		glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model5));
-		ourModel3.Draw(*myShader1, GL_TRIANGLES);
-
+		if (!stageSelect) {
+			//bob stage 1
+			model3 = glm::translate(model3, glm::vec3(0.0f, -2.f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+			model3 = glm::scale(model3, glm::vec3(0.2f));
+			glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model3));
+			ourModel1.Draw(*myShader1, GL_TRIANGLES);
+		}
+		else {
+			//wdw stage 2
+			glm::mat4 model6;
+			model6 = glm::translate(model6, glm::vec3(0.0f, 0.0f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+			model6 = glm::scale(model6, glm::vec3(0.2f));
+			glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model6));
+			ourModel4.Draw(*myShader1, GL_TRIANGLES);
+		}
+		//fox
+		if (stageSelect) {
+			glm::mat4 model4;
+			model4 = glm::translate(model4, glm::vec3(10.0f, 0.0f, 0.0f)); // Translate it down a bit so it's at the center of the scene
+			model4 = rotate(model4, radians(-90.0f), vec3(0, 1, 0));
+			model4 = glm::scale(model4, glm::vec3(0.2f));
+			glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model4));
+			ourModel2.Draw(*myShader1, GL_TRIANGLES);
+		}
+		//toad
+		if (!stageSelect) {
+			glm::mat4 model5;
+			model5 = glm::translate(model5, glm::vec3(2.7f, 3.95f, -4.6f)); // Translate it down a bit so it's at the center of the scene
+			model5 = rotate(model5, radians(-20.0f), vec3(0, 1, 0));
+			model5 = glm::scale(model5, glm::vec3(0.1f));
+			glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model5));
+			ourModel3.Draw(*myShader1, GL_TRIANGLES);
+		}
+		
+		
 		//cubo material
-		vec3 rotateVec = vec3(rotateX, rotateY, 0);
+		vec3 rotateVec = vec3(Vrotate2.x + rotateX, Vrotate2.y + rotateY, 0);
+		WaterLerp(Vposition2.y);
 		vec3 moveVec = vec3(Vposition2.x + offsetX, Vposition2.y + offsetY, Vposition2.z + offsetZ);
+
 		ourCube2.Move(moveVec);
-		ourCube2.Rotate(rotateVec);
+		//ourCube2.Rotate(rotateVec);
+
 		transparentObjects[0] = ourCube2;
 		std::map<float, Object> transparentSort;
 		for (GLuint i = 0; i < transparentObjects.size(); i++) // windows contains all window positions
@@ -338,22 +363,25 @@ int main() {
 				material2.SetShininess(myShader2);
 				material2.ActivateTextures();
 			}
-			else {
+			else if(it->second.GetType() == FigureType::leaves) {
 				material3.SetShininess(myShader2);
 				material3.ActivateTextures();
 			}
+			//this if is to prevent some objects from drawing in wrong scenes, there might be a better way but whatever for now
+			if (it->second.GetType() == FigureType::window && stageSelect || it->second.GetType() == FigureType::leaves && !stageSelect) {
+				GLint modelLoc2 = glGetUniformLocation(myShader2->Program, "model");
+				GLint viewLoc2 = glGetUniformLocation(myShader2->Program, "view");
+				GLint projectionLoc2 = glGetUniformLocation(myShader2->Program, "projection");
 
-			GLint modelLoc2 = glGetUniformLocation(myShader2->Program, "model");
-			GLint viewLoc2 = glGetUniformLocation(myShader2->Program, "view");
-			GLint projectionLoc2 = glGetUniformLocation(myShader2->Program, "projection");
+				glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, value_ptr(view));
+				glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, value_ptr(projection));
 
-			glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, value_ptr(view));
-			glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, value_ptr(projection));
+				mat4 model2;
+				model2 = it->second.GetModelMatrix();
+				glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, value_ptr(model2));
 
-			mat4 model2;
-			model2 = it->second.GetModelMatrix();
-			glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, value_ptr(model2));
-			it->second.Draw();
+				it->second.Draw();
+			}
 		}
 		double xpos, ypos;
 		glfwGetCursorPos(window, &xpos, &ypos);
@@ -394,6 +422,11 @@ void DoMovement(GLFWwindow* window){
 		camera->DoMovement(window, GLFW_KEY_Q);
 	if (keys[GLFW_KEY_E])
 		camera->DoMovement(window, GLFW_KEY_E);
+	if (keys[GLFW_KEY_C]) {
+		vec3 camPos = camera->GetPos();
+		cout << camPos.x << " " << camPos.y << " " << camPos.z << std::endl;
+	}
+	/*
 	if (keys[GLFW_KEY_DOWN]) {
 		offsetY -= 0.05f;
 	}
@@ -425,8 +458,40 @@ void DoMovement(GLFWwindow* window){
 	else if (keys[GLFW_KEY_KP_4]) {
 		rotateY -= 1.f;
 	}
+	*/
+	if (keys[GLFW_KEY_1]) {
+		stageSelect = false;
+	}
+	else if (keys[GLFW_KEY_2]) {
+		stageSelect = true;
+	}
+	else if (keys[GLFW_KEY_3]) {
+		goalYPos = -6.6;
+		dontLerp = false;
+	}
+	else if (keys[GLFW_KEY_4]) {
+		goalYPos = -3.2;
+		dontLerp = false;
+	}
+	else if (keys[GLFW_KEY_5]) {
+		goalYPos = 2;
+		dontLerp = false;
+	}
 }
 
 void MouseScroll(GLFWwindow* window, double xScroll, double yScroll) {
 	camera->MouseScroll(window, xScroll, yScroll);
+}
+
+void WaterLerp(float ogYPos) {
+	if (goalYPos - (offsetY + ogYPos) < 0.05 && goalYPos - (offsetY + ogYPos) > -0.05) {
+		offsetY = goalYPos - ogYPos;
+		dontLerp = true;
+	}
+	else if (goalYPos > offsetY + ogYPos) {
+		offsetY += lerpInc;
+	}
+	else if (goalYPos < offsetY + ogYPos) {
+		offsetY -= lerpInc;
+	}
 }

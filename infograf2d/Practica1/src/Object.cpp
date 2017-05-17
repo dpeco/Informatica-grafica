@@ -5,7 +5,8 @@ Object::Object() {
 }
 Object::Object(vec3 scale, vec3 rotation, vec3 position, FigureType typef) {
 
-	GLfloat VertexBufferObject[] = {
+	if (typef == cube) {
+		GLfloat VertexBufferObject[] = {
 			//front
 			0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
 			0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
@@ -83,7 +84,44 @@ Object::Object(vec3 scale, vec3 rotation, vec3 position, FigureType typef) {
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 		glEnableVertexAttribArray(2);
 		glBindVertexArray(0);
-	
+	}
+	else {
+		GLfloat VertexBufferObject[] = {
+			//front
+			0.5f,  0.5f, 0.f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+			0.5f, -0.5f, 0.f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+			-0.5f, -0.5f, 0.f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+			-0.5f, -0.5f, 0.f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+			-0.5f,  0.5f, 0.f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+			0.5f ,  0.5f, 0.f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+		};
+		vec3 IndexBufferObject[] = {
+			vec3(0.0f ,  0.0f,  0.0f),
+			vec3(2.0f ,  5.0f, -15.0f),
+		};
+
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &VBO);
+
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexBufferObject), VertexBufferObject, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(IndexBufferObject), IndexBufferObject, GL_STATIC_DRAW);
+		// Position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+		// Normal attribute
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+		glEnableVertexAttribArray(1);
+		//tex coords
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
+		glEnableVertexAttribArray(2);
+		glBindVertexArray(0);
+	}
 	Vposition = position;
 	Vrotation = rotation;
 	Vscale = scale;

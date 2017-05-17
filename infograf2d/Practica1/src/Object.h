@@ -8,7 +8,7 @@ using namespace glm;
 enum FigureType {
 	cube = 0,
 	window = 1,
-	leaves = 2
+	leaves = 2,
 };
 class Object {
 	
