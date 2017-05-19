@@ -73,7 +73,7 @@ int main() {
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	//create a window
-	window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 1A", nullptr, nullptr);
+	window = glfwCreateWindow(WIDTH, HEIGHT, "Practica final", nullptr, nullptr);
 	if (!window) {
 		cout << "Error al crear la ventana" << endl;
 		glfwTerminate();
