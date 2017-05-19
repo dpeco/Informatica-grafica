@@ -11,7 +11,7 @@ enum FigureType {
 	leaves = 2,
 };
 class Object {
-	
+
 public:
 	Object();
 	Object(vec3 scale, vec3 rotation, vec3 position, FigureType typef);
@@ -25,10 +25,15 @@ public:
 	FigureType GetType();
 	mat4 GetModelMatrix();
 	vec3 GetPosition();
+	void LookAtCamera(glm::mat4 model);
+	void SetCameraPos(glm::vec3 posCam);
+
 private:
 	GLuint VBO, VAO, EBO;
 	vec3 Vposition;
 	vec3 Vscale;
 	vec3 Vrotation;
 	FigureType type;
+	glm::vec3 cameraPos;
+	float angleToRotate = 0.0f;
 };

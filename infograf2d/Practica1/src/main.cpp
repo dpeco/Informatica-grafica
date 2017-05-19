@@ -43,7 +43,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-Camera *camera = new Camera (cameraPos, cameraDirection, 0.1f, 60.f);
+Camera *camera = new Camera(cameraPos, cameraDirection, 0.1f, 60.f);
 
 int modelSelect;
 
@@ -80,7 +80,7 @@ int main() {
 	}
 
 	glfwMakeContextCurrent(window);
-	
+
 	//set GLEW and inicializate
 	glewExperimental = GL_TRUE;
 	if (GLEW_OK != glewInit()) {
@@ -88,11 +88,11 @@ int main() {
 		glfwTerminate();
 		return NULL;
 	}
-		
+
 	//set function when callback
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetScrollCallback(window, MouseScroll);
-	
+
 	//set windows and viewport
 	int screenWidth, screenHeight;
 	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
@@ -115,12 +115,12 @@ int main() {
 	Shader S2Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader *myShader1 = new Shader(vertexPathMultiple, fragmentPathMultiple);
 	//material
-	Material material2 ("./src/difuso4.png", "./src/especular4.png", 32); 
+	Material material2("./src/difuso4.png", "./src/especular4.png", 32);
 	Material material1("./src/difuso.png", "./src/especular2.png", 32);
 	Material material3("./src/difuso5.png", "./src/especular5.png", 64);
 
 	//bucle de dibujado
-	
+
 	//directional light
 	vec3 Dposition = vec3(0, 1, 0);
 	vec3 Ddir = vec3(0, 0, -1);
@@ -130,7 +130,7 @@ int main() {
 	Light Dlight(Dposition, Ddir, Dambient, Ddiffuse, Dspecular, DIRECTIONAL, 0);
 	Dlight.SetAtt(1.00f, 0.05f, 0.05f);
 	//2 point lights
-	
+
 	vec3 P1position = vec3(-5, 5, 0);
 	vec3 P1dir = vec3(0, 0, 0);
 	vec3 P1ambient = vec3(1, 1, 1);
@@ -138,7 +138,7 @@ int main() {
 	vec3 P1specular = vec3(1, 1, 1);
 	Light p1light(P1position, P1dir, P1ambient, P1diffuse, P1specular, POINT, 0);
 	p1light.SetAtt(1.00f, 0.05f, 0.05f);
-	
+
 	vec3 P2position = vec3(5, 9, 0);
 	vec3 P2dir = vec3(0, 0, 0);
 	vec3 P2ambient = vec3(1, 1, 1);
@@ -196,18 +196,18 @@ int main() {
 
 	//hierba / arboles now
 	std::vector<vec3> treePos;
-		
+
 	treePos.push_back(vec3(1.7, 3.93f, -5.3));
 	treePos.push_back(vec3(-3.8f, 0.4f, 1.4f));
 	treePos.push_back(vec3(-6.6f, 0.4f, 1.4f));
 	treePos.push_back(vec3(4.2f, 2.7f, 1.5f));
 	treePos.push_back(vec3(-6.5f, 0.6f, -1.6f));
-	
+
 
 	//all transparent objects are here, the following array has every position
 	std::vector<Object> transparentObjects;
 	transparentObjects.push_back(ourCube2); //since this is the object that the user can move, this one should always be the 1st one
-	
+
 	for (int i = 0; i < treePos.size(); i++) {
 		vec3 Vscale3 = vec3(0.6, 1, 1);
 		vec3 Vrotate3 = vec3(1, 1, 1);
@@ -216,7 +216,7 @@ int main() {
 		transparentObjects.push_back(ourCube3);
 	}
 
-	
+
 	//models
 	// Load models
 	Model ourModel1("./spider/bob/bobomb battlefeild.obj");
@@ -230,7 +230,7 @@ int main() {
 		// Clear the colorbuffer
 		glClearColor(0.4f, 0.4f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
 		DoMovement(window);
 		mat4 view = camera->LookAt();
 
@@ -238,7 +238,7 @@ int main() {
 		glm::mat4 projection;
 		GLfloat fov = camera->GetFOV();
 		projection = glm::perspective(glm::radians(fov), float(screenWidth / screenHeight), 0.1f, 100.0f);
-		
+
 		//directional cube
 		DShader.USE();
 		mat4 Dmodel;
@@ -250,7 +250,7 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(DShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(Dmodel));
 		dCube.Draw(); // Draw the loaded model
 
-		//pointlight cubes
+					  //pointlight cubes
 		P1Shader.USE();
 		mat4 p1model;
 		p1model = p1Cube.GetModelMatrix();
@@ -259,7 +259,7 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(P1Shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(P1Shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(p1model));
 		p1Cube.Draw(); // Draw the loaded model
-		
+
 		P2Shader.USE();
 		mat4 p2model;
 		p2model = p2Cube.GetModelMatrix();
@@ -287,9 +287,9 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(P2Shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(s2model));
 		s2Cube.Draw(); // Draw the loaded model
 
-		//color de la luz + color del cubo
+					   //color de la luz + color del cubo
 		vec3 cameraPosition = camera->GetPos();
-	
+
 		myShader1->USE();
 		material1.SetShininess(myShader1);
 		material1.ActivateTextures();
@@ -309,7 +309,7 @@ int main() {
 
 
 		//transparent object draw, first sort
-		
+
 
 		// Draw the loaded model 1
 		glm::mat4 model3;
@@ -348,7 +348,7 @@ int main() {
 			glUniformMatrix4fv(modelLoc3, 1, GL_FALSE, glm::value_ptr(model5));
 			ourModel3.Draw(*myShader1, GL_TRIANGLES);
 		}
-		
+
 		//cubo material
 		vec3 rotateVec = vec3(Vrotate2.x + rotateX, Vrotate2.y + rotateY, 0);
 		WaterLerp(Vposition2.y);
@@ -364,14 +364,14 @@ int main() {
 			GLfloat distance = length(cameraPosition - transparentObjects[i].GetPosition());
 			transparentSort[distance] = transparentObjects[i];
 		}
-		
+
 		for (std::map<float, Object>::reverse_iterator it = transparentSort.rbegin(); it != transparentSort.rend(); ++it)
 		{
 			if (it->second.GetType() == FigureType::window) {
 				material2.SetShininess(myShader1);
 				material2.ActivateTextures();
 			}
-			else if(it->second.GetType() == FigureType::leaves) {
+			else if (it->second.GetType() == FigureType::leaves) {
 				material3.SetShininess(myShader1);
 				material3.ActivateTextures();
 			}
@@ -386,6 +386,7 @@ int main() {
 
 				//en caso de que leaves sea true, modificar rotacion de it->second
 				mat4 model2;
+				it->second.SetCameraPos(camera->GetPos());
 				model2 = it->second.GetModelMatrix();
 				glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, value_ptr(model2));
 
@@ -399,7 +400,7 @@ int main() {
 		//intercambia el framebuffer
 		glfwSwapBuffers(window);
 		//comprueba que algun disparador se halla activado
-		glfwPollEvents();	
+		glfwPollEvents();
 
 	}
 
@@ -418,7 +419,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 }
 
-void DoMovement(GLFWwindow* window){
+void DoMovement(GLFWwindow* window) {
 	if (keys[GLFW_KEY_W])
 		camera->DoMovement(window, GLFW_KEY_W);
 	if (keys[GLFW_KEY_S])
@@ -437,35 +438,35 @@ void DoMovement(GLFWwindow* window){
 	}
 	/*
 	if (keys[GLFW_KEY_DOWN]) {
-		offsetY -= 0.05f;
+	offsetY -= 0.05f;
 	}
 	if (keys[GLFW_KEY_LEFT]) {
-		offsetX -= 0.05f;
+	offsetX -= 0.05f;
 	}
 	if (keys[GLFW_KEY_RIGHT]) {
-		offsetX += 0.05f;
+	offsetX += 0.05f;
 	}
 	if (keys[GLFW_KEY_UP]) {
-		offsetY += 0.05f;
+	offsetY += 0.05f;
 	}
 	if (keys[GLFW_KEY_Z]) {
-		offsetZ -= 0.05f;
+	offsetZ -= 0.05f;
 	}
 	if (keys[GLFW_KEY_X]) {
-		offsetZ += 0.05f;
+	offsetZ += 0.05f;
 	}
 
 	if (keys[GLFW_KEY_KP_8]) {
-		rotateX -= 1.f;
+	rotateX -= 1.f;
 	}
 	else if (keys[GLFW_KEY_KP_2]) {
-		rotateX += 1.f;
+	rotateX += 1.f;
 	}
 	else if (keys[GLFW_KEY_KP_6]) {
-		rotateY += 1.f;
+	rotateY += 1.f;
 	}
 	else if (keys[GLFW_KEY_KP_4]) {
-		rotateY -= 1.f;
+	rotateY -= 1.f;
 	}
 	*/
 	if (keys[GLFW_KEY_1]) {
