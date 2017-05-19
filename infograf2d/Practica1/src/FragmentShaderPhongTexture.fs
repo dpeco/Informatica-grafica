@@ -62,6 +62,9 @@ void main(){
 	vec3 normalV = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - FragPos);
 	
+	vec4 colorTemp = texture(material.diffuse, TexCoords);
+
+	   
 	vec3 result = DirectionalLight(dlight, normalV, viewDir);
 	for (int i = 0; i < NUM_MAX_PLIGHTS; i++){
 		result += PointLight(plight[i], normalV, viewDir); 
@@ -71,7 +74,7 @@ void main(){
 		result += SpotLight(slight[i], normalV, viewDir); 
 	}
 	
-	color = vec4(result, 1.0);
+	color = vec4(result, colorTemp.w);
 } 
 
 vec3 DirectionalLight(DLight light, vec3 Normal, vec3 viewDirection){

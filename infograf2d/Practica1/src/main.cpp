@@ -104,9 +104,7 @@ int main() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	const GLchar* vertexPath1 = "./src/SimpleVertexShader1.vertexshader";
-	const GLchar* vertexPath2 = "./src/SimpleVertexShader2.vertexshader";
 	const GLchar* fragmentPath1 = "./src/SimpleFragmentShader1.fragmentshader";
-	const GLchar* fragmentPath2 = "./src/SimpleFragmentShader2.fragmentshader";
 	const GLchar* vertexPathMultiple = "./src/VertexShaderPhongTexture.vs";
 	const GLchar* fragmentPathMultiple = "./src/FragmentShaderPhongTexture.fs";
 
@@ -116,11 +114,10 @@ int main() {
 	Shader S1Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader S2Shader = Shader::Shader(vertexPath1, fragmentPath1);
 	Shader *myShader1 = new Shader(vertexPathMultiple, fragmentPathMultiple);
-	Shader *myShader2 = new Shader(vertexPath2, fragmentPath2);
 	//material
-	Material material2 ("./src/difuso4.png", "./src/especular.png", 32); 
+	Material material2 ("./src/difuso4.png", "./src/especular4.png", 32); 
 	Material material1("./src/difuso.png", "./src/especular2.png", 32);
-	Material material3("./src/difuso5.png", "./src/especular.png", 64);
+	Material material3("./src/difuso5.png", "./src/especular5.png", 64);
 
 	//bucle de dibujado
 	
@@ -160,7 +157,7 @@ int main() {
 	s1light.SetAtt(1.00, 0.0, 0.0);
 	s1light.SetAperture(20.0f, 30.0f);
 
-	vec3 S2position = vec3(4, 0, 0);
+	vec3 S2position = vec3(4, -2, 0);
 	vec3 S2dir = vec3(1, 0, 0);
 	vec3 S2ambient = vec3(1, 1, 0);
 	vec3 S2diffuse = vec3(1, 1, 0);
@@ -196,17 +193,29 @@ int main() {
 	vec3 Vscale2 = vec3(30.f);
 	vec3 Vrotate2 = vec3(90, 0, 0);
 	Object ourCube2(Vscale2, Vrotate2, Vposition2, FigureType::window);
-	//hierba
-	vec3 Vposition3 = vec3(-3, 0, -6);
-	vec3 Vscale3 = vec3(3, 3, 3);
-	vec3 Vrotate3 = vec3(1, 1, 1);
-	Object ourCube3(Vscale3, Vrotate3, Vposition3, FigureType::leaves);
 
+	//hierba / arboles now
+	std::vector<vec3> treePos;
+		
+	treePos.push_back(vec3(1.7, 3.93f, -5.3));
+	treePos.push_back(vec3(-3.8f, 0.4f, 1.4f));
+	treePos.push_back(vec3(-6.6f, 0.4f, 1.4f));
+	treePos.push_back(vec3(4.2f, 2.7f, 1.5f));
+	treePos.push_back(vec3(-6.5f, 0.6f, -1.6f));
 	
+
 	//all transparent objects are here, the following array has every position
 	std::vector<Object> transparentObjects;
 	transparentObjects.push_back(ourCube2); //since this is the object that the user can move, this one should always be the 1st one
-	transparentObjects.push_back(ourCube3);
+	
+	for (int i = 0; i < treePos.size(); i++) {
+		vec3 Vscale3 = vec3(0.6, 1, 1);
+		vec3 Vrotate3 = vec3(1, 1, 1);
+		treePos[i].y += 0.5 * Vscale3.y; //0.5 because it is half of every plane's height
+		Object ourCube3(Vscale3, Vrotate3, treePos[i], FigureType::leaves);
+		transparentObjects.push_back(ourCube3);
+	}
+
 	
 	//models
 	// Load models
@@ -219,7 +228,7 @@ int main() {
 	{
 		// Render
 		// Clear the colorbuffer
-		glClearColor(0.f, 0.f, 0.f, 1.0f);
+		glClearColor(0.4f, 0.4f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		DoMovement(window);
@@ -298,9 +307,9 @@ int main() {
 		glUniformMatrix4fv(viewLoc1, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(projectionLoc1, 1, GL_FALSE, glm::value_ptr(projection));
 
+
 		//transparent object draw, first sort
 		
-		myShader1->USE();
 
 		// Draw the loaded model 1
 		glm::mat4 model3;
@@ -340,7 +349,6 @@ int main() {
 			ourModel3.Draw(*myShader1, GL_TRIANGLES);
 		}
 		
-		
 		//cubo material
 		vec3 rotateVec = vec3(Vrotate2.x + rotateX, Vrotate2.y + rotateY, 0);
 		WaterLerp(Vposition2.y);
@@ -360,22 +368,23 @@ int main() {
 		for (std::map<float, Object>::reverse_iterator it = transparentSort.rbegin(); it != transparentSort.rend(); ++it)
 		{
 			if (it->second.GetType() == FigureType::window) {
-				material2.SetShininess(myShader2);
+				material2.SetShininess(myShader1);
 				material2.ActivateTextures();
 			}
 			else if(it->second.GetType() == FigureType::leaves) {
-				material3.SetShininess(myShader2);
+				material3.SetShininess(myShader1);
 				material3.ActivateTextures();
 			}
 			//this if is to prevent some objects from drawing in wrong scenes, there might be a better way but whatever for now
 			if (it->second.GetType() == FigureType::window && stageSelect || it->second.GetType() == FigureType::leaves && !stageSelect) {
-				GLint modelLoc2 = glGetUniformLocation(myShader2->Program, "model");
-				GLint viewLoc2 = glGetUniformLocation(myShader2->Program, "view");
-				GLint projectionLoc2 = glGetUniformLocation(myShader2->Program, "projection");
+				GLint modelLoc2 = glGetUniformLocation(myShader1->Program, "model");
+				GLint viewLoc2 = glGetUniformLocation(myShader1->Program, "view");
+				GLint projectionLoc2 = glGetUniformLocation(myShader1->Program, "projection");
 
 				glUniformMatrix4fv(viewLoc2, 1, GL_FALSE, value_ptr(view));
 				glUniformMatrix4fv(projectionLoc2, 1, GL_FALSE, value_ptr(projection));
 
+				//en caso de que leaves sea true, modificar rotacion de it->second
 				mat4 model2;
 				model2 = it->second.GetModelMatrix();
 				glUniformMatrix4fv(modelLoc2, 1, GL_FALSE, value_ptr(model2));

@@ -1,6 +1,8 @@
 ﻿  main.cpp
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(169): warning C4305: 'argument': truncation from 'double' to 'float'
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(469): warning C4305: '=': truncation from 'double' to 'float'
-e:\yosm\documents\uni\informatica-grafica\infograf2d\practica1\src\main.cpp(473): warning C4305: '=': truncation from 'double' to 'float'
-  Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.exe
-  Proyecto.vcxproj -> E:\Yosm\Documents\uni\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(166): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(211): warning C4018: '<': signed/unsigned mismatch
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(214): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(478): warning C4305: '=': truncation from 'double' to 'float'
+c:\users\dpeco\downloads\informatica-grafica\infograf2d\practica1\src\main.cpp(482): warning C4305: '=': truncation from 'double' to 'float'
+  Proyecto.vcxproj -> C:\Users\dpeco\Downloads\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.exe
+  Proyecto.vcxproj -> C:\Users\dpeco\Downloads\Informatica-grafica\infograf2d\Practica1\Debug\Practica1.pdb (Full PDB)

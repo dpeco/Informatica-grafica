@@ -25,7 +25,6 @@ public:
 	FigureType GetType();
 	mat4 GetModelMatrix();
 	vec3 GetPosition();
-
 private:
 	GLuint VBO, VAO, EBO;
 	vec3 Vposition;
